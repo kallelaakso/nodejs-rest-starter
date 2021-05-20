@@ -1,13 +1,31 @@
 version: '3.1'
 services:
-  mongo:
-    image: mongo:latest
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: local
+      POSTGRES_PASSWORD: a1
+      POSTGRES_DB: local
     ports:
-      - 27017:27017
-  typescript-rest-boilerplate:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 9999:8080
+
+  rest-api:
     build:
       context: .
     environment:
-      MONGODB_URI: mongodb://mongo:27017/db
+      NODE_ENV: development
+      PG_HOST: db
+      PG_PORT: 5432
+      PG_USERNAME: local
+      PG_PASSWORD: a1
+      PG_DATABASE: local
+      PG_SYNC: 'true'
     ports:
       - 3000:3000

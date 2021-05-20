@@ -13,6 +13,7 @@
     "noUnusedParameters": false,
     "noUnusedLocals": true,
     "outDir": "dist",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": false,
     "strictNullChecks": false,
@@ -20,5 +21,8 @@
   },
   "include": [
     "src/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.json"
   ]
 }

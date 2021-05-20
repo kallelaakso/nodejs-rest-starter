@@ -4,7 +4,13 @@ import * as http from 'http';
 import * as morgan from 'morgan';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import * as path from 'path';
+import { createConnection } from "typeorm";
 import { PassportAuthenticator, Server } from 'typescript-rest';
+
+const enforce = require('express-sslify');
+const config = require('../config/config');
+
+require('dotenv').config();
 
 export class ApiServer {
     public PORT: number = +process.env.PORT || 3000;
@@ -26,16 +32,16 @@ export class ApiServer {
      * Start the server
      */
     public async start() {
-        return new Promise<any>((resolve, reject) => {
-            this.server = this.app.listen(this.PORT, () => {
-                // TODO: replace with Morgan call
-                // tslint:disable-next-line:no-console
-                console.log(`Listening to http://127.0.0.1:${this.PORT}`);
 
-                return resolve();
+        return new Promise<any>((resolve, reject) => {
+            createConnection().then(() => {
+                this.server = this.app.listen(this.PORT, () => {
+                    // tslint:disable-next-line:no-console
+                    console.log(`Listening to http://127.0.0.1:${this.PORT}`);
+                    return resolve();
+                });
             });
         });
-
     }
 
     /**
@@ -58,10 +64,30 @@ export class ApiServer {
      * Configure the express app.
      */
     private config(): void {
-        // Native Express configuration
+        const allowedOrigins = config.get('cors.allowedOrigins');
+
+        interface CorsOptions {
+            origin: boolean;
+        }
+
+        const corsOptionsDelegate = function (req: express.Request, callback: (arg0: null, arg1: CorsOptions) => void) {
+            let corsOptions;
+            if (allowedOrigins.indexOf(req.header('Origin')) !== -1) {
+                corsOptions = { origin: true };
+            } else {
+                corsOptions = { origin: false };
+            }
+            callback(null, corsOptions);
+        };
+
         this.app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
-        this.app.use(cors());
+        this.app.use(cors(corsOptionsDelegate));
         this.app.use(morgan('combined'));
+
+        if (config.get('forceSSL') === true) {
+            this.app.use(enforce.HTTPS({ trustProtoHeader: true }));
+        }
+
         this.configureAuthenticator();
     }
 

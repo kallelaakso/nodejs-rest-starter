@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 npm run build
-docker build -t typescript-rest-boilerplate .
-#docker run typescript-rest-boilerplate:latest
+docker build -t node-rest-api .
+docker run node-rest-api:latest

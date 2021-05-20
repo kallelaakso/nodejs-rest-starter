@@ -3,8 +3,8 @@ swagger:
   entryFile: 
     - ./src/controller/*
   outputFormat: OpenApi_3
-  name: Typescript-rest Boilerplate Application
-  description: A Sample application using Typescipt-rest library
+  name: REST API
+  description: Example REST API
   license: MIT
   produces: [application/json]
   version: 0.0.1

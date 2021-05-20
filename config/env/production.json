@@ -1,0 +1,8 @@
+{
+  "cors": {
+    "allowedOrigins": [
+      "http://localhost:3000"
+    ]
+  },
+  "forceSSL": true
+}
